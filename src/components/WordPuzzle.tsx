@@ -51,8 +51,8 @@ export const WordPuzzle: React.FC<WordPuzzleProps> = ({ mode = 'words', onComple
 
   useEffect(() => {
     const stats = getStats();
-    setHighScore(stats.highScores.wordPuzzle);
-  }, []);
+    setHighScore(mode === 'words' ? stats.highScores.word_words : stats.highScores.word_numbers);
+  }, [mode]);
 
   const generatePuzzle = () => {
     const newGrid: string[][] = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
@@ -167,8 +167,9 @@ export const WordPuzzle: React.FC<WordPuzzleProps> = ({ mode = 'words', onComple
           if (prev <= 1) {
             setIsStarted(false);
             if (timerRef.current) clearInterval(timerRef.current);
-            updateHighScore('wordPuzzle', score);
-            setHighScore(getStats().highScores.wordPuzzle);
+            updateHighScore(mode === 'words' ? 'word_words' : 'word_numbers', score);
+            const stats = getStats();
+            setHighScore(mode === 'words' ? stats.highScores.word_words : stats.highScores.word_numbers);
             
             // Tamamlanma tetikle
             if (onComplete) {

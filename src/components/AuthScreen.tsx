@@ -143,10 +143,14 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onProfileSelected, onLog
               schulte: (currentProfile.stats.highScores.schulte && importedData.stats.highScores?.schulte)
                 ? Math.min(currentProfile.stats.highScores.schulte, importedData.stats.highScores.schulte)
                 : (currentProfile.stats.highScores.schulte || importedData.stats.highScores?.schulte || 0),
-              letterPuzzle: Math.max(currentProfile.stats.highScores.letterPuzzle || 0, importedData.stats.highScores?.letterPuzzle || 0),
-              wordPuzzle: Math.max(currentProfile.stats.highScores.wordPuzzle || 0, importedData.stats.highScores?.wordPuzzle || 0),
-              wordMatching: Math.max(currentProfile.stats.highScores.wordMatching || 0, importedData.stats.highScores?.wordMatching || 0),
-              flashExercise: Math.max(currentProfile.stats.highScores.flashExercise || 0, importedData.stats.highScores?.flashExercise || 0)
+              letter_letters: Math.max(currentProfile.stats.highScores.letter_letters || 0, importedData.stats.highScores?.letter_letters || 0),
+              letter_numbers: Math.max(currentProfile.stats.highScores.letter_numbers || 0, importedData.stats.highScores?.letter_numbers || 0),
+              word_words: Math.max(currentProfile.stats.highScores.word_words || 0, importedData.stats.highScores?.word_words || 0),
+              word_numbers: Math.max(currentProfile.stats.highScores.word_numbers || 0, importedData.stats.highScores?.word_numbers || 0),
+              match_words: Math.max(currentProfile.stats.highScores.match_words || 0, importedData.stats.highScores?.match_words || 0),
+              match_numbers: Math.max(currentProfile.stats.highScores.match_numbers || 0, importedData.stats.highScores?.match_numbers || 0),
+              flash: Math.max(currentProfile.stats.highScores.flash || 0, importedData.stats.highScores?.flash || 0),
+              flash_sentence: Math.max(currentProfile.stats.highScores.flash_sentence || 0, importedData.stats.highScores?.flash_sentence || 0)
             }
           };
           alert("Veriler başarıyla birleştirildi! Lütfen kaydetmek için alttaki 'Kaydet' butonuna basın.");

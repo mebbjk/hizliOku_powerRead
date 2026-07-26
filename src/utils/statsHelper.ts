@@ -18,11 +18,16 @@ export interface UserStats {
   }[];
   highScores: {
     schulte: number;
-    letterPuzzle: number;
-    wordPuzzle: number;
-    wordMatching: number;
-    flashExercise: number;
+    letter_letters: number;
+    letter_numbers: number;
+    word_words: number;
+    word_numbers: number;
+    match_words: number;
+    match_numbers: number;
+    flash: number;
+    flash_sentence: number;
   };
+  unscoredPlayCounts?: Record<string, number>;
   exerciseHistory?: Record<string, { date: string; score: number }[]>;
 }
 
@@ -42,10 +47,19 @@ const DEFAULT_STATS: UserStats = {
   sessionHistory: [],
   highScores: {
     schulte: 0,
-    letterPuzzle: 0,
-    wordPuzzle: 0,
-    wordMatching: 0,
-    flashExercise: 0
+    letter_letters: 0,
+    letter_numbers: 0,
+    word_words: 0,
+    word_numbers: 0,
+    match_words: 0,
+    match_numbers: 0,
+    flash: 0,
+    flash_sentence: 0
+  },
+  unscoredPlayCounts: {
+    rsvp: 0,
+    flash_unscored: 0,
+    pathtracking: 0
   },
   exerciseHistory: {}
 };
@@ -67,6 +81,10 @@ export const getStats = (): UserStats => {
       highScores: {
         ...DEFAULT_STATS.highScores,
         ...(stats.highScores || {})
+      },
+      unscoredPlayCounts: {
+        ...DEFAULT_STATS.unscoredPlayCounts,
+        ...(stats.unscoredPlayCounts || {})
       },
       programScores: stats.programScores || [0, 0, 0, 0, 0, 0, 0, 0],
       sessionHistory: stats.sessionHistory || [],
@@ -93,30 +111,40 @@ export const calculateLevelFromWpm = (wpm: number): number => {
   return 6;
 };
 
-export const updateHighScore = (game: keyof UserStats['highScores'], score: number): boolean => {
+export const updateHighScore = (game: string, score: number): boolean => {
   const stats = getStats();
   const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' });
 
+  // Map old keys to new keys for backward compatibility
+  let resolvedKey = game as keyof UserStats['highScores'];
+  if (game === 'letterPuzzle') resolvedKey = 'letter_letters';
+  else if (game === 'wordPuzzle') resolvedKey = 'word_words';
+  else if (game === 'flashExercise') resolvedKey = 'flash';
+
+  if (!stats.highScores) {
+    stats.highScores = { ...DEFAULT_STATS.highScores };
+  }
+
   // Initialize history if needed
   if (!stats.exerciseHistory) stats.exerciseHistory = {};
-  if (!stats.exerciseHistory[game]) stats.exerciseHistory[game] = [];
+  if (!stats.exerciseHistory[resolvedKey]) stats.exerciseHistory[resolvedKey] = [];
 
-  // Add to history
-  stats.exerciseHistory[game].push({ date: today, score });
-  if (stats.exerciseHistory[game].length > 10) {
-    stats.exerciseHistory[game].shift();
+  // Add to history (Limit to last 5 scores to keep UI compact and avoid scroll)
+  stats.exerciseHistory[resolvedKey].push({ date: today, score });
+  if (stats.exerciseHistory[resolvedKey].length > 5) {
+    stats.exerciseHistory[resolvedKey].shift();
   }
 
   let isNewHigh = false;
-  if (game === 'schulte') {
+  if (resolvedKey === 'schulte') {
     // Schulte için daha düşük süre daha iyidir (0 hariç)
     if (stats.highScores.schulte === 0 || score < stats.highScores.schulte) {
       stats.highScores.schulte = score;
       isNewHigh = true;
     }
   } else {
-    if (score > stats.highScores[game]) {
-      stats.highScores[game] = score;
+    if (score > (stats.highScores[resolvedKey] || 0)) {
+      stats.highScores[resolvedKey] = score;
       isNewHigh = true;
     }
   }

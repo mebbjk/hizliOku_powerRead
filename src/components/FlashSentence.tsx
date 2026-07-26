@@ -46,7 +46,7 @@ export const FlashSentence: React.FC<FlashSentenceProps> = ({ onComplete, onStar
     if (idx >= 5) {
       // 5 cümle bitti! Egzersizi tamamla
       setIsStarted(false);
-      updateHighScore('flashExercise', score); // Kaydet
+      updateHighScore('flash_sentence', score); // Kaydet
       if (onComplete) {
         onComplete(score);
       }

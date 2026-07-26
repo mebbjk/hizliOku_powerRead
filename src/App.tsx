@@ -9,7 +9,7 @@ import { FlashSentence } from './components/FlashSentence';
 import { SpeedTest } from './components/SpeedTest';
 import { PathTracking } from './components/PathTracking';
 
-import { getStats, saveStats, type UserStats, registerOnStatsSave } from './utils/statsHelper';
+import { getStats, saveStats, type UserStats, registerOnStatsSave, updateHighScore } from './utils/statsHelper';
 import { AuthScreen } from './components/AuthScreen';
 import { Avatar } from './components/Avatar';
 import { AboutModal } from './components/AboutModal';
@@ -305,6 +305,17 @@ function App() {
     const currentTab = updatedStats.trainingMode === 'program'
       ? updatedStats.programList[updatedStats.programIndex]
       : activeTab;
+
+    // Merkezi istatistik ve rekor kaydı
+    if (SCORED_TABS.includes(currentTab as TabType)) {
+      updateHighScore(currentTab, score || 0);
+    } else if (UNSCORED_TABS.includes(currentTab as TabType)) {
+      if (!updatedStats.unscoredPlayCounts) {
+        updatedStats.unscoredPlayCounts = { rsvp: 0, flash_unscored: 0, pathtracking: 0 };
+      }
+      updatedStats.unscoredPlayCounts[currentTab] = (updatedStats.unscoredPlayCounts[currentTab] || 0) + 1;
+      saveStats(updatedStats);
+    }
 
     // Hız testi tamamlandığında seviye hesapla
     if (currentTab === 'speedtest') {

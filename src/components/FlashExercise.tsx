@@ -34,7 +34,7 @@ export const FlashExercise: React.FC<FlashExerciseProps> = ({ onComplete, onStar
 
   useEffect(() => {
     const stats = getStats();
-    setHighScore(stats.highScores.flashExercise);
+    setHighScore(stats.highScores.flash);
   }, []);
 
   const generateNewValue = () => {
@@ -103,8 +103,8 @@ export const FlashExercise: React.FC<FlashExerciseProps> = ({ onComplete, onStar
             setIsStarted(false);
             clearInterval(gameIntervalRef.current!);
             if (isScored) {
-              updateHighScore('flashExercise', score);
-              setHighScore(getStats().highScores.flashExercise);
+              updateHighScore('flash', score);
+              setHighScore(getStats().highScores.flash);
             }
             if (onComplete) {
               setTimeout(() => onComplete(isScored ? score : 100), 1000);

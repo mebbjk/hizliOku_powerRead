@@ -47,8 +47,8 @@ export const LetterPuzzle: React.FC<LetterPuzzleProps> = ({ mode = 'letters', on
 
   useEffect(() => {
     const stats = getStats();
-    setHighScore(stats.highScores.letterPuzzle);
-  }, []);
+    setHighScore(mode === 'letters' ? stats.highScores.letter_letters : stats.highScores.letter_numbers);
+  }, [mode]);
 
   const generateNewPuzzle = (keepTargets = false) => {
     const pool = mode === 'letters' ? alphabet : digitPool;
@@ -169,9 +169,9 @@ export const LetterPuzzle: React.FC<LetterPuzzleProps> = ({ mode = 'letters', on
           if (prev <= 1) {
             setIsStarted(false);
             if (timerRef.current) clearInterval(timerRef.current);
-            updateHighScore('letterPuzzle', score);
+            updateHighScore(mode === 'letters' ? 'letter_letters' : 'letter_numbers', score);
             const stats = getStats();
-            setHighScore(stats.highScores.letterPuzzle);
+            setHighScore(mode === 'letters' ? stats.highScores.letter_letters : stats.highScores.letter_numbers);
             
             if (onComplete) {
               setTimeout(() => onComplete(score), 1000);

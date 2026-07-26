@@ -33,6 +33,18 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
 }) => {
   const [selectedExercise, setSelectedExercise] = React.useState<keyof UserStats['highScores']>('schulte');
 
+  // Arka plan kaydırmasını (scroll) engelleme
+  React.useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   // Eski skorları yeni anahtarlara taşıyarak geriye dönük veri kaybını önleyelim
@@ -52,7 +64,7 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
     migratedHighScores.match_words = rawHighScores.wordMatching;
   }
 
-  // Statik egzersiz listesi tanımlayarak isimlerin boş gelmesini önleyelim
+  // Statik egzersiz listesi
   const scoredKeys: (keyof UserStats['highScores'])[] = [
     'schulte',
     'letter_letters',
@@ -90,7 +102,7 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
     return 'Puan';
   };
 
-  // Okuma hızı (WPM/KD) ölçüm geçmişini alalım (Yoksa bestWpm'den ilk elemanı üretelim)
+  // Okuma hızı ölçüm geçmişi
   const wpmHistory = stats.wpmHistory && stats.wpmHistory.length > 0
     ? stats.wpmHistory
     : stats.bestWpm > 0
@@ -101,7 +113,7 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/85 backdrop-blur-sm transition-all duration-300">
-      <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-2xl p-4 sm:p-5 space-y-4 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 overflow-y-auto max-h-[96vh] flex flex-col scrollbar-thin">
+      <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-2xl p-4 sm:p-6 space-y-5 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 overflow-y-auto max-h-[96vh] flex flex-col scrollbar-thin">
         
         {/* Kapatma Butonu */}
         <button
@@ -109,57 +121,57 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
           className="absolute top-4 right-4 p-1.5 rounded-full bg-slate-950 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-200 transition cursor-pointer z-50"
           title="Kapat"
         >
-          <X className="w-4 h-4" />
+          <X className="w-5 h-5" />
         </button>
 
-        {/* 1. Üst Kısım: Ortalı Profil ve Seviye Bilgisi */}
-        <div className="flex flex-col items-center justify-center text-center space-y-1 pb-2 border-b border-slate-850 shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg overflow-hidden flex items-center justify-center bg-slate-900 border border-slate-800 shrink-0">
-              <Avatar value={profileAvatar} className="text-xl w-full h-full flex items-center justify-center" />
+        {/* 1. Üst Kısım: Ortalı Profil ve Seviye Bilgisi (Puntolar büyütüldü) */}
+        <div className="flex flex-col items-center justify-center text-center space-y-1.5 pb-2.5 border-b border-slate-850 shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-lg overflow-hidden flex items-center justify-center bg-slate-900 border border-slate-800 shrink-0">
+              <Avatar value={profileAvatar} className="text-2xl w-full h-full flex items-center justify-center" />
             </div>
-            <h2 className="text-base font-black text-slate-100">{profileName}</h2>
-            <div className="flex items-center gap-0.5 text-[9px] text-orange-400 font-bold bg-orange-500/10 px-2.5 py-0.5 rounded-full border border-orange-500/20">
-              <Flame className="w-3 h-3 fill-current" />
+            <h2 className="text-lg sm:text-xl font-black text-slate-100">{profileName}</h2>
+            <div className="flex items-center gap-1 text-[10px] sm:text-xs text-orange-400 font-bold bg-orange-500/10 px-3 py-1 rounded-full border border-orange-500/20">
+              <Flame className="w-3.5 h-3.5 fill-current" />
               {stats.streak} Gün
             </div>
           </div>
-          <p className="text-xs text-teal-400 font-black tracking-wider uppercase">
+          <p className="text-xs sm:text-sm text-teal-400 font-black tracking-wider uppercase">
             {getLevelTitle(stats.currentLevel)}
           </p>
         </div>
 
         {/* 2. Seviye Tespit Okuma Hızı Geçmişi (Yatay Kaydırılabilir K/D Grafik) */}
-        <div className="bg-slate-950/40 p-3 rounded-xl border border-slate-850/80 shrink-0 space-y-1.5">
-          <div className="text-[9px] font-bold text-slate-500 font-mono tracking-widest uppercase flex items-center justify-between">
+        <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-850/80 shrink-0 space-y-2">
+          <div className="text-[10px] sm:text-xs font-bold text-slate-400 font-mono tracking-widest uppercase flex items-center justify-between">
             <span>Okuma Hızı Seviye Tespiti Geçmişi (Kelime / Dakika)</span>
-            {stats.bestWpm > 0 && <span className="text-teal-400">En Yüksek: {stats.bestWpm} K/D</span>}
+            {stats.bestWpm > 0 && <span className="text-teal-405 font-extrabold">En Yüksek: {stats.bestWpm} K/D</span>}
           </div>
           
           <div className="overflow-x-auto whitespace-nowrap pb-1 pt-2 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
             {wpmHistory.length === 0 ? (
-              <div className="text-center py-2 text-[10px] text-slate-500 font-mono">
+              <div className="text-center py-2 text-xs text-slate-500 font-mono">
                 Henüz yapılmış hız testi bulunmuyor.
               </div>
             ) : (
-              <div className="flex items-end gap-3 px-2 min-w-max h-16">
+              <div className="flex items-end gap-4 px-2 min-w-max h-20">
                 {wpmHistory.map((hist, index) => {
                   const heightPct = Math.min(100, Math.max(25, (hist.wpm / maxWpm) * 100));
                   return (
-                    <div key={index} className="flex-none w-12 flex flex-col items-center justify-end h-full">
-                      <span className="text-[8px] font-mono text-teal-400 font-black">
+                    <div key={index} className="flex-none w-14 flex flex-col items-center justify-end h-full">
+                      <span className="text-xs font-mono text-teal-400 font-black">
                         {hist.wpm}
                       </span>
-                      <span className="text-[6px] text-teal-550 font-bold -mt-0.5 mb-0.5">K/D</span>
+                      <span className="text-[7.5px] text-teal-550 font-bold -mt-0.5 mb-1">K/D</span>
                       <div 
-                        className="w-8 bg-gradient-to-t from-teal-500/10 to-teal-550/30 rounded-t border-t border-teal-550/40 transition-all duration-300 relative group cursor-help" 
-                        style={{ height: `${heightPct * 0.7}%` }}
+                        className="w-10 bg-gradient-to-t from-teal-500/10 to-teal-550/30 rounded-t border-t border-teal-550/40 transition-all duration-300 relative group cursor-help" 
+                        style={{ height: `${heightPct * 0.65}%` }}
                       >
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-slate-900 border border-slate-800 text-[8px] font-mono text-slate-300 px-1.5 py-0.5 rounded shadow whitespace-nowrap z-10">
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-slate-900 border border-slate-800 text-[9px] font-mono text-slate-300 px-2 py-0.5 rounded shadow whitespace-nowrap z-10">
                           Seviye Tespiti
                         </div>
                       </div>
-                      <span className="text-[7px] font-mono text-slate-550 mt-1">{hist.date}</span>
+                      <span className="text-[8px] font-mono text-slate-500 mt-1">{hist.date}</span>
                     </div>
                   );
                 })}
@@ -168,13 +180,13 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
           </div>
         </div>
 
-        {/* 3. Puanlı Egzersiz Rekorları (Grid: Mobil Uyumlu 2-3 Kolon & Büyük Puntolar) */}
-        <div className="space-y-1.5 shrink-0">
-          <div className="text-[9px] font-bold text-slate-500 font-mono tracking-widest uppercase flex items-center gap-1">
-            <Star className="w-3 h-3 text-amber-400" />
+        {/* 3. Puanlı Egzersiz Rekorları (Grid: Puntolar ve Kart Boyutları Büyütüldü) */}
+        <div className="space-y-2 shrink-0">
+          <div className="text-[10px] sm:text-xs font-bold text-slate-400 font-mono tracking-widest uppercase flex items-center gap-1.5">
+            <Star className="w-3.5 h-3.5 text-amber-400" />
             Puanlı Egzersiz Rekorları
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
             {scoredKeys.map((key) => {
               const value = migratedHighScores[key] || 0;
               const isSelected = selectedExercise === key;
@@ -182,20 +194,20 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
                 <button
                   key={key}
                   onClick={() => setSelectedExercise(key)}
-                  className={`p-2.5 rounded-lg flex flex-col justify-between text-left transition duration-200 border ${
+                  className={`p-3 rounded-xl flex flex-col justify-between text-left transition duration-200 border ${
                     isSelected
                       ? 'bg-indigo-500/10 border-indigo-500/60 shadow shadow-indigo-500/5'
                       : 'bg-slate-950/30 border-slate-850/60 hover:bg-slate-950/50 hover:border-slate-800'
                   }`}
                 >
-                  <span className={`text-[10px] sm:text-xs font-black truncate w-full ${isSelected ? 'text-indigo-400' : 'text-slate-400'}`}>
+                  <span className={`text-[11px] sm:text-xs font-extrabold truncate w-full ${isSelected ? 'text-indigo-400' : 'text-slate-400'}`}>
                     {exerciseNames[key]}
                   </span>
-                  <div className="flex items-baseline gap-0.5 mt-1">
-                    <span className="text-sm sm:text-base font-black text-slate-200 font-mono">
+                  <div className="flex items-baseline gap-0.5 mt-1.5">
+                    <span className="text-base sm:text-lg font-black text-slate-200 font-mono">
                       {value}
                     </span>
-                    <span className="text-[8px] sm:text-[9px] text-slate-500 font-mono">
+                    <span className="text-[9px] sm:text-[10px] text-slate-500 font-mono font-bold">
                       {getScoreUnit(key)}
                     </span>
                   </div>
@@ -205,25 +217,25 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
           </div>
         </div>
 
-        {/* 4. Puansız Egzersizler (Grid: Mobil Uyumlu 2-3 Kolon & Büyük Puntolar) */}
-        <div className="space-y-1.5 shrink-0">
-          <div className="text-[9px] font-bold text-slate-500 font-mono tracking-widest uppercase flex items-center gap-1">
-            <Eye className="w-3 h-3 text-teal-400" />
+        {/* 4. Puansız Egzersizler (Grid: Puntolar ve Kart Boyutları Büyütüldü) */}
+        <div className="space-y-2 shrink-0">
+          <div className="text-[10px] sm:text-xs font-bold text-slate-400 font-mono tracking-widest uppercase flex items-center gap-1.5">
+            <Eye className="w-3.5 h-3.5 text-teal-400" />
             Puansız Egzersiz Katılım Sayıları
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
             {Object.keys(unscoredNames).map((key) => {
               const playCount = stats.unscoredPlayCounts?.[key] || 0;
               return (
-                <div key={key} className="bg-slate-950/20 border border-slate-850/50 p-2.5 rounded-lg flex flex-col justify-between">
-                  <span className="text-[10px] sm:text-xs text-slate-400 font-bold truncate">
+                <div key={key} className="bg-slate-950/20 border border-slate-850/50 p-3 rounded-xl flex flex-col justify-between">
+                  <span className="text-[11px] sm:text-xs text-slate-400 font-extrabold truncate">
                     {unscoredNames[key]}
                   </span>
-                  <div className="flex items-baseline gap-0.5 mt-1">
-                    <span className="text-sm sm:text-base font-black text-slate-350 font-mono">
+                  <div className="flex items-baseline gap-0.5 mt-1.5">
+                    <span className="text-base sm:text-lg font-black text-slate-350 font-mono">
                       {playCount}
                     </span>
-                    <span className="text-[8px] sm:text-[9px] text-slate-500 font-mono">Kez</span>
+                    <span className="text-[9px] sm:text-[10px] text-slate-500 font-mono font-bold">Kez</span>
                   </div>
                 </div>
               );
@@ -231,16 +243,16 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
           </div>
         </div>
 
-        {/* 5. Seçilen Egzersiz Çizgi Grafiği */}
-        <div className="bg-slate-950/50 p-3 rounded-xl border border-slate-850 flex-grow flex flex-col justify-between min-h-[110px] max-h-[140px] overflow-hidden">
-          <div className="text-[9px] font-bold text-indigo-400 font-mono tracking-widest uppercase flex justify-between shrink-0">
-            <span>{exerciseNames[selectedExercise]} Gelişim Grafiği (Son 5 Skor)</span>
+        {/* 5. Seçilen Egzersiz Çizgi Grafiği (Daha büyük ve daha uzun yapıldı) */}
+        <div className="bg-slate-950/50 p-4 rounded-xl border border-slate-850 flex-grow flex flex-col justify-between min-h-[170px] sm:min-h-[220px] max-h-[260px] overflow-hidden">
+          <div className="text-[10px] sm:text-xs font-bold text-indigo-400 font-mono tracking-widest uppercase flex justify-between shrink-0">
+            <span>{exerciseNames[selectedExercise]} Gelişim Grafiği</span>
             {migratedHighScores[selectedExercise] > 0 && (
               <span>En Yüksek: {migratedHighScores[selectedExercise]} {getScoreUnit(selectedExercise)}</span>
             )}
           </div>
           
-          <div className="flex-grow flex items-center justify-center relative py-1">
+          <div className="flex-grow flex items-center justify-center relative py-2">
             {(() => {
               const historyData = stats.exerciseHistory?.[selectedExercise] || [];
               const displayData = historyData.length > 0
@@ -251,7 +263,7 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
 
               if (displayData.length === 0) {
                 return (
-                  <div className="text-[10px] text-slate-500 font-mono">
+                  <div className="text-xs text-slate-500 font-mono">
                     Bu egzersiz için henüz kaydedilmiş gelişim verisi bulunmuyor.
                   </div>
                 );
@@ -262,11 +274,12 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
               const minScore = Math.min(...scores, 0);
               const scoreRange = maxScore - minScore || 1;
 
+              // Grafik yüksekliğini ve dikey eksen yayılımını artırdık (viewBox y=15 ile y=115 arası, 100px fark)
               const points = displayData.map((hist, index) => {
                 const x = displayData.length > 1
-                  ? 30 + (index / (displayData.length - 1)) * 440
+                  ? 40 + (index / (displayData.length - 1)) * 420
                   : 250;
-                const y = 62 - ((hist.score - minScore) / scoreRange) * 45;
+                const y = 110 - ((hist.score - minScore) / scoreRange) * 80;
                 return { x, y, score: hist.score, date: hist.date };
               });
 
@@ -275,11 +288,11 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
                 : '';
 
               const areaPath = points.length > 1
-                ? `${linePath} L ${points[points.length - 1].x} 62 L ${points[0].x} 62 Z`
+                ? `${linePath} L ${points[points.length - 1].x} 110 L ${points[0].x} 110 Z`
                 : '';
 
               return (
-                <svg viewBox="0 0 500 78" className="w-full h-full max-h-[80px]">
+                <svg viewBox="0 0 500 135" className="w-full h-full max-h-[170px] sm:max-h-[200px]">
                   <defs>
                     <linearGradient id="selectedGradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#6366f1" stopOpacity="0.3" />
@@ -288,9 +301,9 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
                   </defs>
                   
                   {/* Kılavuz Çizgiler */}
-                  <line x1="20" y1="12" x2="480" y2="12" stroke="#1e293b" strokeWidth="1" strokeDasharray="3 3" />
-                  <line x1="20" y1="37" x2="480" y2="37" stroke="#1e293b" strokeWidth="1" strokeDasharray="3 3" />
-                  <line x1="20" y1="62" x2="480" y2="62" stroke="#1e293b" strokeWidth="1" />
+                  <line x1="20" y1="20" x2="480" y2="20" stroke="#1e293b" strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="20" y1="65" x2="480" y2="65" stroke="#1e293b" strokeWidth="1" strokeDasharray="3 3" />
+                  <line x1="20" y1="110" x2="480" y2="110" stroke="#1e293b" strokeWidth="1" />
                   
                   {/* Alan */}
                   {points.length > 1 && (
@@ -299,17 +312,17 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
                   
                   {/* Çizgi */}
                   {points.length > 1 && (
-                    <path d={linePath} fill="none" stroke="#6366f1" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d={linePath} fill="none" stroke="#6366f1" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                   )}
 
-                  {/* Noktalar ve Değerler */}
+                  {/* Noktalar ve Değerler (Puntolar büyütüldü) */}
                   {points.map((p, i) => (
                     <g key={i}>
-                      <circle cx={p.x} cy={p.y} r="3.5" fill="#0f172a" stroke="#6366f1" strokeWidth="2" />
-                      <text x={p.x} y={p.y - 6} textAnchor="middle" className="text-[8px] font-mono fill-indigo-400 font-bold">
+                      <circle cx={p.x} cy={p.y} r="4.5" fill="#0f172a" stroke="#6366f1" strokeWidth="2.5" />
+                      <text x={p.x} y={p.y - 8} textAnchor="middle" className="text-[10px] sm:text-[11px] font-mono fill-indigo-400 font-extrabold">
                         {p.score}{getScoreUnit(selectedExercise)}
                       </text>
-                      <text x={p.x} y="74" textAnchor="middle" className="text-[7.5px] font-mono fill-slate-500">
+                      <text x={p.x} y="128" textAnchor="middle" className="text-[9px] sm:text-[10px] font-mono fill-slate-500 font-bold">
                         {p.date}
                       </text>
                     </g>

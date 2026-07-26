@@ -1163,31 +1163,41 @@ function App() {
             )}
 
             {/* Dinamik Egzersiz Rehberi */}
-            <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-800 space-y-4">
-              <div>
-                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-mono">EGZERSİZ REHBERİ</h3>
-                <p className="text-[10px] text-slate-650 font-mono mt-0.5 font-semibold">
-                  {EXERCISE_GUIDES[!stats.hasDoneInitialTest ? 'speedtest' : activeTab]?.title}
-                </p>
-              </div>
+            {(() => {
+              const guideTab = !stats.hasDoneInitialTest
+                ? 'speedtest'
+                : (stats.trainingMode === 'program' && !isExerciseRunning)
+                  ? (stats.programList[stats.programIndex] as TabType || 'rsvp')
+                  : activeTab;
+              const guideInfo = EXERCISE_GUIDES[guideTab] || { title: '', desc: '', benefit: '', howto: '' };
+              return (
+                <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-800 space-y-4">
+                  <div>
+                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-widest font-mono">EGZERSİZ REHBERİ</h3>
+                    <p className="text-[10px] text-slate-650 font-mono mt-0.5 font-semibold">
+                      {guideInfo.title}
+                    </p>
+                  </div>
 
-              <div className="space-y-4 text-xs font-sans leading-relaxed">
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-teal-400 font-mono uppercase tracking-wider block">Nedir?</span>
-                  <p className="text-slate-400 text-[11px]">{EXERCISE_GUIDES[!stats.hasDoneInitialTest ? 'speedtest' : activeTab]?.desc}</p>
-                </div>
+                  <div className="space-y-4 text-xs font-sans leading-relaxed">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-teal-400 font-mono uppercase tracking-wider block">Nedir?</span>
+                      <p className="text-slate-400 text-[11px]">{guideInfo.desc}</p>
+                    </div>
 
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-indigo-400 font-mono uppercase tracking-wider block">Ne İşe Yarar?</span>
-                  <p className="text-slate-400 text-[11px]">{EXERCISE_GUIDES[!stats.hasDoneInitialTest ? 'speedtest' : activeTab]?.benefit}</p>
-                </div>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-indigo-400 font-mono uppercase tracking-wider block">Ne İşe Yarar?</span>
+                      <p className="text-slate-400 text-[11px]">{guideInfo.benefit}</p>
+                    </div>
 
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold text-orange-400 font-mono uppercase tracking-wider block">Nasıl Yapılır?</span>
-                  <p className="text-slate-400 text-[11px]">{EXERCISE_GUIDES[!stats.hasDoneInitialTest ? 'speedtest' : activeTab]?.howto}</p>
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-bold text-orange-400 font-mono uppercase tracking-wider block">Nasıl Yapılır?</span>
+                      <p className="text-slate-400 text-[11px]">{guideInfo.howto}</p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Organik Sayaç (Sadece Toplam) */}
             {isFirebaseConfigured && counterData && (

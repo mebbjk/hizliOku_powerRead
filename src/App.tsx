@@ -13,6 +13,7 @@ import { getStats, saveStats, type UserStats, registerOnStatsSave } from './util
 import { AuthScreen } from './components/AuthScreen';
 import { Avatar } from './components/Avatar';
 import { AboutModal } from './components/AboutModal';
+import { ProgressModal } from './components/ProgressModal';
 import { authService, type UserProfile } from './services/authService';
 import { 
   Brain, ShieldCheck, Flame, BookOpenCheck, TrendingUp, Award, Play, Info, LogOut, Settings, MessageSquare,
@@ -145,6 +146,7 @@ function App() {
   const [activeProfile, setActiveProfile] = useState<UserProfile | null>(null);
   const [allProfiles, setAllProfiles] = useState<UserProfile[]>([]);
   const [isAboutOpen, setIsAboutOpen] = useState<boolean>(false);
+  const [isProgressOpen, setIsProgressOpen] = useState<boolean>(false);
 
   const [stats, setStats] = useState<UserStats | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('rsvp');
@@ -820,6 +822,18 @@ function App() {
                       Profil Ayarla / Değiştir
                     </button>
 
+                    {/* Gelişim Paneli */}
+                    <button
+                      onClick={() => {
+                        setIsProgressOpen(true);
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2.5 text-xs font-semibold text-slate-200 hover:text-slate-100 hover:bg-slate-850 transition flex items-center gap-2.5 cursor-pointer border-t border-slate-850"
+                    >
+                      <TrendingUp className="w-3.5 h-3.5 text-teal-450" />
+                      Gelişim Paneli
+                    </button>
+
                     {/* Sorun / Tavsiye Bildir */}
                     <button
                       onClick={() => {
@@ -1161,6 +1175,16 @@ function App() {
       </footer>
       
       <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
+      {stats && activeProfile && (
+        <ProgressModal
+          isOpen={isProgressOpen}
+          onClose={() => setIsProgressOpen(false)}
+          stats={stats}
+          profileName={activeProfile.name}
+          profileAvatar={activeProfile.avatar}
+          email={currentUser?.email || ''}
+        />
+      )}
     </div>
   );
 }

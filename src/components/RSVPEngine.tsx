@@ -56,24 +56,7 @@ export const RSVPEngine: React.FC<RSVPEngineProps> = ({ onComplete, onStartActiv
     }
   }, [text]);
 
-  const getOrpIndex = (word: string): number => {
-    const len = word.length;
-    if (len <= 1) return 0;
-    if (len <= 5) return 1;
-    if (len <= 9) return 2;
-    if (len <= 13) return 3;
-    return 4;
-  };
 
-  const splitWord = (word: string) => {
-    if (!word) return { left: '', pivot: '', right: '' };
-    const pivotIdx = getOrpIndex(word);
-    return {
-      left: word.substring(0, pivotIdx),
-      pivot: word.charAt(pivotIdx),
-      right: word.substring(pivotIdx + 1),
-    };
-  };
 
   const calculateDelay = useCallback((word: string): number => {
     const baseDelay = (60 * 1000) / wpm;
@@ -153,7 +136,6 @@ export const RSVPEngine: React.FC<RSVPEngineProps> = ({ onComplete, onStartActiv
   };
 
   const currentWord = words[currentIndex] || '';
-  const { left, pivot, right } = splitWord(currentWord);
 
   return (
     <div className={`transition-all duration-300 ${isFocusMode ? 'bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-6' : 'p-6 bg-slate-900/40 border border-slate-800 rounded-3xl backdrop-blur-md'}`}>
@@ -200,16 +182,8 @@ export const RSVPEngine: React.FC<RSVPEngineProps> = ({ onComplete, onStartActiv
               {countdown}
             </div>
           ) : words.length > 0 ? (
-            <div className="text-4xl md:text-5xl font-mono font-medium flex w-full justify-center select-none">
-              <span className="w-1/2 text-right text-slate-400 pr-0.5 break-all">
-                {left}
-              </span>
-              <span className="text-teal-400 font-extrabold px-0.5">
-                {pivot}
-              </span>
-              <span className="w-1/2 text-left text-slate-400 pl-0.5 break-all">
-                {right}
-              </span>
+            <div className="text-4xl md:text-5xl font-sans font-black text-center text-slate-200 select-none px-4 whitespace-nowrap tracking-wide max-w-full overflow-hidden">
+              {currentWord}
             </div>
           ) : (
             <span className="text-slate-600 text-sm font-sans">Lütfen bekleyin...</span>

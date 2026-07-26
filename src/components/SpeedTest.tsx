@@ -180,9 +180,9 @@ export const SpeedTest: React.FC<SpeedTestProps> = ({ onComplete, onStartActive 
             <div className="flex gap-2">
               <button
                 onClick={handleReset}
-                className="flex items-center gap-2 px-5 py-2.5 bg-slate-850 hover:bg-slate-800 text-slate-300 rounded-xl text-sm transition"
+                className="flex items-center gap-2 px-5 py-2.5 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-xl text-sm transition font-bold"
               >
-                <RotateCcw className="w-4 h-4" />
+                <RotateCcw className="w-4 h-4 text-orange-450" />
                 Yeniden Test Et
               </button>
               {onComplete && (

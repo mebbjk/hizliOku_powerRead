@@ -143,9 +143,8 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
 
         {/* 2. Seviye Tespit Okuma Hızı Geçmişi (Yatay Kaydırılabilir K/D Grafik) */}
         <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-850/80 shrink-0 space-y-2">
-          <div className="text-[10px] sm:text-xs font-bold text-slate-400 font-mono tracking-widest uppercase flex items-center justify-between">
-            <span>Okuma Hızı Seviye Tespiti Geçmişi (Kelime / Dakika)</span>
-            {stats.bestWpm > 0 && <span className="text-teal-405 font-extrabold">En Yüksek: {stats.bestWpm} K/D</span>}
+          <div className="text-xs sm:text-sm font-bold text-slate-405 font-mono tracking-widest uppercase flex items-center justify-between">
+            <span>Seviye Tespiti Hız Geçmişi (K/D)</span>
           </div>
           
           <div className="overflow-x-auto whitespace-nowrap pb-1 pt-2 scrollbar-thin scrollbar-thumb-slate-800 scrollbar-track-transparent">
@@ -154,24 +153,24 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
                 Henüz yapılmış hız testi bulunmuyor.
               </div>
             ) : (
-              <div className="flex items-end gap-4 px-2 min-w-max h-20">
+              <div className="flex items-end gap-4 px-2 min-w-max h-28">
                 {wpmHistory.map((hist, index) => {
                   const heightPct = Math.min(100, Math.max(25, (hist.wpm / maxWpm) * 100));
                   return (
                     <div key={index} className="flex-none w-14 flex flex-col items-center justify-end h-full">
-                      <span className="text-xs font-mono text-teal-400 font-black">
+                      <span className="text-sm font-mono text-teal-350 font-black">
                         {hist.wpm}
                       </span>
-                      <span className="text-[7.5px] text-teal-550 font-bold -mt-0.5 mb-1">K/D</span>
+                      <span className="text-[9px] text-teal-400 font-extrabold -mt-0.5 mb-1">K/D</span>
                       <div 
                         className="w-10 bg-gradient-to-t from-teal-500/10 to-teal-550/30 rounded-t border-t border-teal-550/40 transition-all duration-300 relative group cursor-help" 
-                        style={{ height: `${heightPct * 0.65}%` }}
+                        style={{ height: `${heightPct * 0.8}%` }}
                       >
-                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-slate-900 border border-slate-800 text-[9px] font-mono text-slate-300 px-2 py-0.5 rounded shadow whitespace-nowrap z-10">
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-slate-900 border border-slate-800 text-[10px] font-mono text-slate-300 px-2 py-0.5 rounded shadow whitespace-nowrap z-10">
                           Seviye Tespiti
                         </div>
                       </div>
-                      <span className="text-[8px] font-mono text-slate-500 mt-1">{hist.date}</span>
+                      <span className="text-[9px] font-mono text-slate-500 mt-1">{hist.date}</span>
                     </div>
                   );
                 })}
@@ -245,11 +244,8 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
 
         {/* 5. Seçilen Egzersiz Çizgi Grafiği (Daha büyük ve daha uzun yapıldı) */}
         <div className="bg-slate-950/50 p-4 rounded-xl border border-slate-850 flex-grow flex flex-col justify-between min-h-[170px] sm:min-h-[220px] max-h-[260px] overflow-hidden">
-          <div className="text-[10px] sm:text-xs font-bold text-indigo-400 font-mono tracking-widest uppercase flex justify-between shrink-0">
-            <span>{exerciseNames[selectedExercise]} Gelişim Grafiği</span>
-            {migratedHighScores[selectedExercise] > 0 && (
-              <span>En Yüksek: {migratedHighScores[selectedExercise]} {getScoreUnit(selectedExercise)}</span>
-            )}
+          <div className="text-xs sm:text-sm font-black text-indigo-400 font-mono tracking-widest uppercase flex justify-between shrink-0">
+            <span>{exerciseNames[selectedExercise]}</span>
           </div>
           
           <div className="flex-grow flex items-center justify-center relative py-2">
@@ -318,11 +314,11 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
                   {/* Noktalar ve Değerler (Puntolar büyütüldü) */}
                   {points.map((p, i) => (
                     <g key={i}>
-                      <circle cx={p.x} cy={p.y} r="4.5" fill="#0f172a" stroke="#6366f1" strokeWidth="2.5" />
-                      <text x={p.x} y={p.y - 8} textAnchor="middle" className="text-[10px] sm:text-[11px] font-mono fill-indigo-400 font-extrabold">
+                      <circle cx={p.x} cy={p.y} r="5" fill="#0f172a" stroke="#6366f1" strokeWidth="3" />
+                      <text x={p.x} y={p.y - 12} textAnchor="middle" className="font-mono font-black fill-indigo-300" style={{ fontSize: '13px' }}>
                         {p.score}{getScoreUnit(selectedExercise)}
                       </text>
-                      <text x={p.x} y="128" textAnchor="middle" className="text-[9px] sm:text-[10px] font-mono fill-slate-500 font-bold">
+                      <text x={p.x} y="130" textAnchor="middle" className="font-mono font-black fill-slate-350" style={{ fontSize: '11px' }}>
                         {p.date}
                       </text>
                     </g>

@@ -223,9 +223,17 @@ function App() {
     }
   };
 
-  // İstatistikleri yükleme ve dinlenme takibi
   const loadStats = () => {
     const s = getStats();
+
+    // Geçici/geriye dönük 9 egzersiz düzeltmesi: Eğer liste 9 ise 8'e düşürelim
+    if (s.programList && s.programList.length === 9) {
+      s.programList = s.programList.filter(x => x !== 'pathtracking');
+      s.programScores = s.programScores.slice(0, s.programList.length);
+      if (s.programIndex >= 8) s.programIndex = 7;
+      saveStats(s);
+    }
+
     setStats(s);
 
     // Eğer program listesi yoksa veya boşsa oluştur
@@ -618,7 +626,8 @@ function App() {
       if (averageImprovement > 0) {
         // Gelişme var! Bir sonraki programın ilk adımı seviye belirleme speedtest olsun
         generateNewProgramList(updated);
-        updated.programList = ['speedtest', ...updated.programList];
+        // Toplam adım sayısını 8'de tutmak için 'pathtracking' egzersizini çıkaralım
+        updated.programList = ['speedtest', ...updated.programList.filter(x => x !== 'pathtracking')];
         // Program skorları dizisini program listesi boyutuyla eşitle
         updated.programScores = new Array(updated.programList.length).fill(0);
       } else {

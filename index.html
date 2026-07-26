@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hızlı Okuma - Yapay Zeka Destekli Okuma ve Odaklanma Akademisi</title>
+    <meta name="description" content="Yapay zeka destekli bilimsel egzersizler, okuma motoru (RSVP), Schulte tabloları ve flaş kelime çalışmaları ile okuma hızınızı ve zihinsel odaklanma becerilerinizi 2-3 katına çıkarın." />
+    <meta name="keywords" content="hızlı okuma, hızlı okuma akademisi, okuma motoru, rsvp okuma, schulte tablosu, odaklanma egzersizleri, zihin atlası, hızlı okuma testi, okuma hızı ölçümü, kelime dakika, bilişsel gelişim, göz yogası" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://hizlioku.web.app" />
+    
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hizlioku.web.app" />
+    <meta property="og:title" content="Hızlı Okuma - Zihinsel Odaklanma ve Gelişim Akademisi" />
+    <meta property="og:description" content="Bilimsel egzersizlerle okuma hızınızı ve odaklanma reflekslerinizi 2-3 katına çıkarın." />
+    <meta property="og:image" content="https://hizlioku.web.app/profile.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://hizlioku.web.app" />
+    <meta property="twitter:title" content="Hızlı Okuma - Okuma ve Odaklanma Akademisi" />
+    <meta property="twitter:description" content="Bilimsel egzersizlerle okuma hızınızı ve odaklanma reflekslerinizi 2-3 katına çıkarın." />
+    <meta property="twitter:image" content="https://hizlioku.web.app/profile.png" />
+
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#14b8a6" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((reg) => console.log('Service Worker registered:', reg.scope))
+            .catch((err) => console.error('Service Worker registration failed:', err));
+        });
+      }
+    </script>
+  </body>
+</html>

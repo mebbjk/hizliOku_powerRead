@@ -1092,27 +1092,35 @@ function App() {
             {stats.hasDoneInitialTest && (
               <div className="bg-slate-900/40 p-5 rounded-2xl border border-slate-800 space-y-4">
                 {/* Çoklu Profil Aktif Durum ve Değiştirme Alanı */}
-                <div className="flex items-center gap-3 border-b border-slate-850 pb-3">
-                  <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center bg-slate-950 p-1 border border-slate-850">
-                    <Avatar value={activeProfile?.avatar} className="text-2xl w-full h-full flex items-center justify-center" />
+                <div className="flex flex-col gap-3 border-b border-slate-850 pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center bg-slate-950 p-1 border border-slate-850 shrink-0">
+                      <Avatar value={activeProfile?.avatar} className="text-2xl w-full h-full flex items-center justify-center" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-black text-slate-200 truncate">{activeProfile?.name}</div>
+                      <div className="text-[9px] text-slate-500 font-mono truncate">{currentUser?.email}</div>
+                    </div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-black text-slate-200 truncate">{activeProfile?.name}</div>
-                    <div className="text-[9px] text-slate-500 font-mono truncate">{currentUser?.email}</div>
-                  </div>
-                  <div className="flex flex-col gap-1.5 shrink-0">
+                  <div className="flex gap-2 w-full">
                     <button
                       onClick={() => {
                         setActiveProfile(null);
                         localStorage.removeItem(`active_profile_${currentUser?.uid}`);
                       }}
-                      className="px-2.5 py-1.5 rounded-xl border border-slate-800 hover:border-slate-700 bg-slate-900 hover:bg-slate-850 text-[10px] font-bold text-slate-300 hover:text-white transition cursor-pointer text-center w-full"
+                      className="flex-1 py-1.5 rounded-xl border border-slate-800 hover:border-slate-700 bg-slate-900 hover:bg-slate-850 text-[10px] font-bold text-slate-300 hover:text-white transition cursor-pointer text-center"
                     >
                       Profil Seç
                     </button>
                     <button
+                      onClick={() => setIsProgressOpen(true)}
+                      className="flex-1 py-1.5 rounded-xl border border-teal-500/20 hover:border-teal-500/40 bg-teal-500/10 hover:bg-teal-500/25 text-[10px] font-bold text-teal-400 hover:text-teal-300 transition cursor-pointer text-center"
+                    >
+                      Gelişim
+                    </button>
+                    <button
                       onClick={handleLogout}
-                      className="px-2.5 py-1.5 rounded-xl border border-rose-500/20 hover:border-rose-500/40 bg-rose-500/5 hover:bg-rose-500/10 text-[10px] font-bold text-rose-400 hover:text-rose-300 transition cursor-pointer text-center w-full"
+                      className="flex-1 py-1.5 rounded-xl border border-rose-500/20 hover:border-rose-500/40 bg-rose-500/5 hover:bg-rose-500/10 text-[10px] font-bold text-rose-400 hover:text-rose-300 transition cursor-pointer text-center"
                     >
                       Çıkış Yap
                     </button>

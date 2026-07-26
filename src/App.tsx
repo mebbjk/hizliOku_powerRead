@@ -329,6 +329,13 @@ function App() {
 
       updatedStats.currentLevel = newLvl;
       updatedStats.hasDoneInitialTest = true;
+      if (wpmVal > updatedStats.bestWpm) {
+        updatedStats.bestWpm = wpmVal;
+      }
+
+      const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' });
+      if (!updatedStats.wpmHistory) updatedStats.wpmHistory = [];
+      updatedStats.wpmHistory.push({ date: today, wpm: wpmVal });
 
       // Programı yeni seviyeye göre sıfırla ve yeniden oluştur
       generateNewProgramList(updatedStats);

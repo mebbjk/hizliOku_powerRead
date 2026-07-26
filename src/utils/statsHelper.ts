@@ -29,6 +29,7 @@ export interface UserStats {
   };
   unscoredPlayCounts?: Record<string, number>;
   exerciseHistory?: Record<string, { date: string; score: number }[]>;
+  wpmHistory?: { date: string; wpm: number }[];
 }
 
 const DEFAULT_STATS: UserStats = {
@@ -61,7 +62,8 @@ const DEFAULT_STATS: UserStats = {
     flash_unscored: 0,
     pathtracking: 0
   },
-  exerciseHistory: {}
+  exerciseHistory: {},
+  wpmHistory: []
 };
 
 let onStatsSaveCallback: ((stats: UserStats) => void) | null = null;
@@ -88,7 +90,8 @@ export const getStats = (): UserStats => {
       },
       programScores: stats.programScores || [0, 0, 0, 0, 0, 0, 0, 0],
       sessionHistory: stats.sessionHistory || [],
-      exerciseHistory: stats.exerciseHistory || {}
+      exerciseHistory: stats.exerciseHistory || {},
+      wpmHistory: stats.wpmHistory || []
     };
   } catch {
     return DEFAULT_STATS;
@@ -167,6 +170,12 @@ export const saveWpm = (wpm: number) => {
     stats.currentLevel = calculateLevelFromWpm(wpm);
   }
   stats.hasDoneInitialTest = true;
+
+  // WPM gelişim geçmişine ekle
+  const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' });
+  if (!stats.wpmHistory) stats.wpmHistory = [];
+  stats.wpmHistory.push({ date: today, wpm });
+
   saveStats(stats);
 };
 

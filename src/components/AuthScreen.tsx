@@ -140,11 +140,13 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onProfileSelected, onLog
             bestWpm: Math.max(currentProfile.stats.bestWpm || 0, importedData.stats.bestWpm || 0),
             hasDoneInitialTest: currentProfile.stats.hasDoneInitialTest || importedData.stats.hasDoneInitialTest || false,
             highScores: {
+              schulte: (currentProfile.stats.highScores.schulte && importedData.stats.highScores?.schulte)
+                ? Math.min(currentProfile.stats.highScores.schulte, importedData.stats.highScores.schulte)
+                : (currentProfile.stats.highScores.schulte || importedData.stats.highScores?.schulte || 0),
               letterPuzzle: Math.max(currentProfile.stats.highScores.letterPuzzle || 0, importedData.stats.highScores?.letterPuzzle || 0),
               wordPuzzle: Math.max(currentProfile.stats.highScores.wordPuzzle || 0, importedData.stats.highScores?.wordPuzzle || 0),
               wordMatching: Math.max(currentProfile.stats.highScores.wordMatching || 0, importedData.stats.highScores?.wordMatching || 0),
-              flashExercise: Math.max(currentProfile.stats.highScores.flashExercise || 0, importedData.stats.highScores?.flashExercise || 0),
-              pathTracking: Math.max(currentProfile.stats.highScores.pathTracking || 0, importedData.stats.highScores?.pathTracking || 0)
+              flashExercise: Math.max(currentProfile.stats.highScores.flashExercise || 0, importedData.stats.highScores?.flashExercise || 0)
             }
           };
           alert("Veriler başarıyla birleştirildi! Lütfen kaydetmek için alttaki 'Kaydet' butonuna basın.");

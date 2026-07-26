@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Clock, Compass } from 'lucide-react';
-import { getStats, updateHighScore } from '../utils/statsHelper';
+import { getStats } from '../utils/statsHelper';
 import { TURKISH_WORDS } from '../utils/wordPool';
 
 type PathType = 'circle' | 'infinity' | 'zigzag' | 'horizontal' | 'vertical' | 'random';
@@ -124,8 +124,6 @@ export const PathTracking: React.FC<PathTrackingProps> = ({ pathType = 'circle',
             setIsStarted(false);
             if (timerRef.current) clearInterval(timerRef.current);
             if (jumpRef.current) clearTimeout(jumpRef.current);
-            
-            updateHighScore('pathTracking', wordsReadRef.current);
             
             if (onComplete) {
               setTimeout(() => onComplete(wordsReadRef.current), 1000);

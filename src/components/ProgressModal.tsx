@@ -32,15 +32,17 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
   profileAvatar,
   email
 }) => {
+  const [selectedExercise, setSelectedExercise] = React.useState<keyof UserStats['highScores']>('schulte');
+
   if (!isOpen) return null;
 
   // Egzersiz isimlerinin Türkçe etiketleri
   const exerciseNames: Record<keyof UserStats['highScores'], string> = {
+    schulte: "Schulte Tablosu",
     letterPuzzle: "Harf Bulmaca",
     wordPuzzle: "Kelime Bulmaca",
     wordMatching: "Kelime Eşleştirme",
-    flashExercise: "Anlık Flaş",
-    pathTracking: "Rota Takip"
+    flashExercise: "Anlık Flaş"
   };
 
   // Egzersiz skorlarının birimlerini alma
@@ -133,117 +135,143 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
             Egzersiz Rekorlarınız
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {Object.entries(stats.highScores).map(([key, value]) => (
-              <div key={key} className="bg-slate-950/40 border border-slate-850/80 p-3 rounded-xl flex flex-col justify-between">
-                <span className="text-[10px] text-slate-400 font-bold truncate">
-                  {exerciseNames[key as keyof UserStats['highScores']] || key}
-                </span>
-                <div className="mt-1 flex items-baseline gap-1">
-                  <span className="text-base font-black text-slate-200 font-mono">
-                    {value || 0}
+            {Object.entries(stats.highScores).map(([key, value]) => {
+              const isSelected = selectedExercise === key;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setSelectedExercise(key as keyof UserStats['highScores'])}
+                  className={`p-3 rounded-xl flex flex-col justify-between text-left transition duration-250 border ${
+                    isSelected
+                      ? 'bg-indigo-500/10 border-indigo-500/80 shadow-lg shadow-indigo-500/5'
+                      : 'bg-slate-950/40 border-slate-850/80 hover:bg-slate-950/70 hover:border-slate-800'
+                  }`}
+                >
+                  <span className={`text-[10px] font-bold truncate ${isSelected ? 'text-indigo-400' : 'text-slate-400'}`}>
+                    {exerciseNames[key as keyof UserStats['highScores']] || key}
                   </span>
-                  <span className="text-[8px] text-slate-500">
-                    {getScoreUnit(key)}
-                  </span>
-                </div>
-              </div>
-            ))}
+                  <div className="mt-1 flex items-baseline gap-1">
+                    <span className="text-base font-black text-slate-200 font-mono">
+                      {value || 0}
+                    </span>
+                    <span className="text-[8px] text-slate-500">
+                      {getScoreUnit(key)}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* Tarihsel Gelişim Grafiği */}
-        {stats.sessionHistory && stats.sessionHistory.length > 0 ? (
-          <div className="space-y-6">
-            {/* Çizgi Grafik: Seans Ortalama Skor Trendi */}
-            <div className="space-y-3">
-              <div className="text-[10px] font-bold text-slate-500 font-mono tracking-widest uppercase flex items-center gap-1.5">
+        <div className="space-y-6">
+          {/* Çizgi Grafik: Seçili Egzersiz Skor Trendi */}
+          <div className="space-y-3">
+            <div className="text-[10px] font-bold text-slate-500 font-mono tracking-widest uppercase flex items-center justify-between">
+              <span className="flex items-center gap-1.5">
                 <BarChart2 className="w-3.5 h-3.5 text-indigo-400" />
-                Seans Başarı Skor Trendi (Çizgi Grafik)
-              </div>
-              <div className="bg-slate-950/60 p-5 rounded-2xl border border-slate-850">
-                <div className="w-full overflow-x-auto">
-                  <svg viewBox="0 0 500 130" className="w-full h-auto min-w-[400px]">
-                    <defs>
-                      <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#14b8a6" stopOpacity="0.0" />
-                      </linearGradient>
-                    </defs>
-                    
-                    {/* Kılavuz Çizgiler */}
-                    <line x1="30" y1="20" x2="470" y2="20" stroke="#1e293b" strokeDasharray="3 3" />
-                    <line x1="30" y1="65" x2="470" y2="65" stroke="#1e293b" strokeDasharray="3 3" />
-                    <line x1="30" y1="110" x2="470" y2="110" stroke="#1e293b" strokeDasharray="3 3" />
-                    
-                    {/* Eksen Değerleri */}
-                    {(() => {
-                      const historyData = stats.sessionHistory.slice(-8);
-                      const scores = historyData.map(h => h.avgScore);
-                      const maxScore = Math.max(...scores, 100);
-                      const minScore = Math.min(...scores, 0);
-                      const scoreRange = maxScore - minScore || 1;
-
-                      const points = historyData.map((hist, index) => {
-                        const x = historyData.length > 1 
-                          ? 30 + (index / (historyData.length - 1)) * 440
-                          : 250;
-                        const y = 110 - ((hist.avgScore - minScore) / scoreRange) * 90;
-                        return { x, y, score: hist.avgScore, date: hist.date };
-                      });
-
-                      const linePath = points.length > 1
-                        ? points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
-                        : '';
-
-                      const areaPath = points.length > 1
-                        ? `${linePath} L ${points[points.length - 1].x} 110 L ${points[0].x} 110 Z`
-                        : '';
-
-                      return (
-                        <>
-                          {/* Alan Doldurma */}
-                          {points.length > 1 && (
-                            <path d={areaPath} fill="url(#chartGradient)" />
-                          )}
-                          
-                          {/* Çizgi */}
-                          {points.length > 1 && (
-                            <path d={linePath} fill="none" stroke="#14b8a6" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                          )}
-
-                          {/* Noktalar ve Etiketler */}
-                          {points.map((p, i) => (
-                            <g key={i} className="group cursor-pointer">
-                              <circle cx={p.x} cy={p.y} r="5" fill="#0f172a" stroke="#14b8a6" strokeWidth="2.5" />
-                              <circle cx={p.x} cy={p.y} r="8" fill="#14b8a6" className="opacity-0 hover:opacity-20 transition-all duration-200" />
-                              
-                              {/* Değer Etiketi */}
-                              <text x={p.x} y={p.y - 10} textAnchor="middle" className="text-[9px] font-mono fill-teal-400 font-bold bg-slate-900">
-                                {p.score}
-                              </text>
-                              
-                              {/* Tarih Etiketi */}
-                              <text x={p.x} y="125" textAnchor="middle" className="text-[8px] font-mono fill-slate-500">
-                                {p.date}
-                              </text>
-                            </g>
-                          ))}
-                        </>
-                      );
-                    })()}
-                  </svg>
-                </div>
-                <p className="text-[9px] text-slate-500 text-center leading-normal mt-2">
-                  Seanslar boyunca elde ettiğiniz ortalama egzersiz başarı skorlarınızın seyri.
-                </p>
-              </div>
+                {exerciseNames[selectedExercise]} Gelişim Grafiği
+              </span>
+              <span className="text-[9px] text-indigo-400 font-semibold lowercase">kartlara tıklayarak egzersiz değiştirebilirsiniz</span>
             </div>
+            
+            <div className="bg-slate-950/60 p-5 rounded-2xl border border-slate-850">
+              {(() => {
+                const historyData = stats.exerciseHistory?.[selectedExercise] || [];
+                const displayData = historyData.length > 0
+                  ? historyData.slice(-8)
+                  : stats.highScores[selectedExercise] > 0
+                    ? [{ date: 'Başlangıç', score: stats.highScores[selectedExercise] }]
+                    : [];
 
-            {/* Sütun Grafik: Seans Ortalama Gelişim Oranı */}
+                if (displayData.length === 0) {
+                  return (
+                    <div className="flex flex-col items-center justify-center py-8 text-center text-xs text-slate-500 font-mono">
+                      Bu egzersiz için henüz kaydedilmiş seans verisi bulunmuyor.
+                    </div>
+                  );
+                }
+
+                const scores = displayData.map(h => h.score);
+                const maxScore = Math.max(...scores, selectedExercise === 'schulte' ? 30 : 100);
+                const minScore = Math.min(...scores, 0);
+                const scoreRange = maxScore - minScore || 1;
+
+                const points = displayData.map((hist, index) => {
+                  const x = displayData.length > 1
+                    ? 30 + (index / (displayData.length - 1)) * 440
+                    : 250;
+                  const y = 110 - ((hist.score - minScore) / scoreRange) * 90;
+                  return { x, y, score: hist.score, date: hist.date };
+                });
+
+                const linePath = points.length > 1
+                  ? points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+                  : '';
+
+                const areaPath = points.length > 1
+                  ? `${linePath} L ${points[points.length - 1].x} 110 L ${points[0].x} 110 Z`
+                  : '';
+
+                return (
+                  <div className="w-full overflow-x-auto animate-in fade-in duration-200">
+                    <svg viewBox="0 0 500 130" className="w-full h-auto min-w-[400px]">
+                      <defs>
+                        <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#6366f1" stopOpacity="0.4" />
+                          <stop offset="100%" stopColor="#6366f1" stopOpacity="0.0" />
+                        </linearGradient>
+                      </defs>
+                      
+                      {/* Kılavuz Çizgiler */}
+                      <line x1="30" y1="20" x2="470" y2="20" stroke="#1e293b" strokeDasharray="3 3" />
+                      <line x1="30" y1="65" x2="470" y2="65" stroke="#1e293b" strokeDasharray="3 3" />
+                      <line x1="30" y1="110" x2="470" y2="110" stroke="#1e293b" strokeDasharray="3 3" />
+                      
+                      {/* Alan Doldurma */}
+                      {points.length > 1 && (
+                        <path d={areaPath} fill="url(#chartGradient)" />
+                      )}
+                      
+                      {/* Çizgi */}
+                      {points.length > 1 && (
+                        <path d={linePath} fill="none" stroke="#6366f1" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                      )}
+
+                      {/* Noktalar ve Etiketler */}
+                      {points.map((p, i) => (
+                        <g key={i} className="group cursor-pointer">
+                          <circle cx={p.x} cy={p.y} r="5" fill="#0f172a" stroke="#6366f1" strokeWidth="2.5" />
+                          <circle cx={p.x} cy={p.y} r="8" fill="#6366f1" className="opacity-0 hover:opacity-20 transition-all duration-200" />
+                          
+                          {/* Değer Etiketi */}
+                          <text x={p.x} y={p.y - 10} textAnchor="middle" className="text-[9px] font-mono fill-indigo-400 font-bold bg-slate-900">
+                            {p.score} {getScoreUnit(selectedExercise)}
+                          </text>
+                          
+                          {/* Tarih Etiketi */}
+                          <text x={p.x} y="125" textAnchor="middle" className="text-[8px] font-mono fill-slate-500">
+                            {p.date}
+                          </text>
+                        </g>
+                      ))}
+                    </svg>
+                  </div>
+                );
+              })()}
+              <p className="text-[9px] text-slate-500 text-center leading-normal mt-2">
+                Seçtiğiniz egzersizin son seanslardaki başarı skorları trendi.
+              </p>
+            </div>
+          </div>
+
+          {/* Sütun Grafik: Seans Ortalama Gelişim Oranı */}
+          {stats.sessionHistory && stats.sessionHistory.length > 0 && (
             <div className="space-y-3">
               <div className="text-[10px] font-bold text-slate-500 font-mono tracking-widest uppercase flex items-center gap-1.5">
                 <BarChart2 className="w-3.5 h-3.5 text-teal-400" />
-                Seans Performans Gelişimi (Sütun Grafik)
+                Genel Seans Gelişim Oranları (Sütun Grafik)
               </div>
               
               <div className="bg-slate-950/60 p-5 rounded-2xl border border-slate-850 space-y-4">
@@ -261,7 +289,7 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
                         >
                           {/* Tooltip */}
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:block bg-slate-900 border border-slate-800 text-[8px] font-mono text-slate-350 px-2 py-1 rounded shadow-lg whitespace-nowrap z-10">
-                            Skor: {hist.avgScore} Puan
+                            Ortalama Skor: {hist.avgScore} Puan
                           </div>
                         </div>
                         <span className="text-[8px] font-mono text-slate-500 truncate w-full text-center">{hist.date}</span>
@@ -270,16 +298,12 @@ export const ProgressModal: React.FC<ProgressModalProps> = ({
                   })}
                 </div>
                 <p className="text-[9px] text-slate-500 text-center leading-normal">
-                  Son seanslardaki egzersizlerin 1. ve 2. denemeleri arasındaki ortalama gelişim oranınız.
+                  Her eğitim seansındaki 1. ve 2. denemeleriniz arasındaki ortalama gelişim oranınız.
                 </p>
               </div>
             </div>
-          </div>
-        ) : (
-          <div className="bg-slate-950/40 border border-slate-850 p-6 rounded-2xl text-center text-xs text-slate-500">
-            Henüz tamamlanmış seans geçmişi bulunmuyor. Egzersizleri 8 adımlık Eğitim Programı ile tamamladıkça burası güncellenecektir.
-          </div>
-        )}
+          )}
+        </div>
 
       </div>
     </div>

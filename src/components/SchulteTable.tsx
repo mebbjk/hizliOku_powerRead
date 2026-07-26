@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Play, Target } from 'lucide-react';
-import { getStats } from '../utils/statsHelper';
+import { getStats, updateHighScore } from '../utils/statsHelper';
 
 interface SchulteTableProps {
   onComplete?: (score?: number) => void;
@@ -33,6 +33,13 @@ export const SchulteTable: React.FC<SchulteTableProps> = ({ onComplete, onStartA
       setGridSize(5); // 5x5
     }
   }, [level]);
+
+  useEffect(() => {
+    const stats = getStats();
+    if (stats.highScores.schulte > 0) {
+      setBestTime(stats.highScores.schulte);
+    }
+  }, []);
 
   const shuffleNumbers = () => {
     const arr = Array.from({ length: totalCells }, (_, i) => i + 1);
@@ -91,6 +98,7 @@ export const SchulteTable: React.FC<SchulteTableProps> = ({ onComplete, onStartA
         if (bestTime === null || finalTime < bestTime) {
           setBestTime(finalTime);
         }
+        updateHighScore('schulte', finalTime);
         // Egzersiz bitiminde bir sonraki adıma geçiş için onComplete çağır
         if (onComplete) {
           setTimeout(() => onComplete(finalTime), 1000);

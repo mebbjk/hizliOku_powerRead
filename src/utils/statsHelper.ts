@@ -17,12 +17,13 @@ export interface UserStats {
     improvement: number; // Yüzdesel gelişim oranı
   }[];
   highScores: {
+    schulte: number;
     letterPuzzle: number;
     wordPuzzle: number;
     wordMatching: number;
     flashExercise: number;
-    pathTracking: number;
   };
+  exerciseHistory?: Record<string, { date: string; score: number }[]>;
 }
 
 const DEFAULT_STATS: UserStats = {
@@ -40,12 +41,13 @@ const DEFAULT_STATS: UserStats = {
   programScores: [0, 0, 0, 0, 0, 0, 0, 0],
   sessionHistory: [],
   highScores: {
+    schulte: 0,
     letterPuzzle: 0,
     wordPuzzle: 0,
     wordMatching: 0,
-    flashExercise: 0,
-    pathTracking: 0
-  }
+    flashExercise: 0
+  },
+  exerciseHistory: {}
 };
 
 let onStatsSaveCallback: ((stats: UserStats) => void) | null = null;
@@ -67,7 +69,8 @@ export const getStats = (): UserStats => {
         ...(stats.highScores || {})
       },
       programScores: stats.programScores || [0, 0, 0, 0, 0, 0, 0, 0],
-      sessionHistory: stats.sessionHistory || []
+      sessionHistory: stats.sessionHistory || [],
+      exerciseHistory: stats.exerciseHistory || {}
     };
   } catch {
     return DEFAULT_STATS;
@@ -92,12 +95,34 @@ export const calculateLevelFromWpm = (wpm: number): number => {
 
 export const updateHighScore = (game: keyof UserStats['highScores'], score: number): boolean => {
   const stats = getStats();
-  if (score > stats.highScores[game]) {
-    stats.highScores[game] = score;
-    saveStats(stats);
-    return true;
+  const today = new Date().toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' });
+
+  // Initialize history if needed
+  if (!stats.exerciseHistory) stats.exerciseHistory = {};
+  if (!stats.exerciseHistory[game]) stats.exerciseHistory[game] = [];
+
+  // Add to history
+  stats.exerciseHistory[game].push({ date: today, score });
+  if (stats.exerciseHistory[game].length > 10) {
+    stats.exerciseHistory[game].shift();
   }
-  return false;
+
+  let isNewHigh = false;
+  if (game === 'schulte') {
+    // Schulte için daha düşük süre daha iyidir (0 hariç)
+    if (stats.highScores.schulte === 0 || score < stats.highScores.schulte) {
+      stats.highScores.schulte = score;
+      isNewHigh = true;
+    }
+  } else {
+    if (score > stats.highScores[game]) {
+      stats.highScores[game] = score;
+      isNewHigh = true;
+    }
+  }
+
+  saveStats(stats);
+  return isNewHigh;
 };
 
 export const addWordsRead = (words: number) => {
